@@ -1,8 +1,6 @@
 const express = require('express')
 const app = express()
-const mysql = require("mysql")
-const config = require('./service-key.json')
-// const db = require('./database')
+const db = require('./database')
 
 app.get('/', (req, res) => {
   res.status(200).send('<h2>Hello yoi mamen</h2>').end()
@@ -19,7 +17,7 @@ app.get('/kratos', (req, res) => {
 app.get('/test', (req, res) => {
   let query = "SELECT * FROM tbl_test"
 
-  pool.query(query, (err, result) => {
+  db.query(query, (err, result) => {
     if (!err) {
       res.send(result);
     }
@@ -29,23 +27,6 @@ app.get('/test', (req, res) => {
     }
   });
 })
-
-// const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
-
-const pool = mysql.createPool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  socketPath: process.env.INSTANCE_UNIX_SOCKET
-})
-
-// const pool = mysql.createPool({
-//   user: process.env.DB_USER,
-//   password: process.env.DB_PASS,
-//   database: process.env.DB_NAME,
-//   socketPath: `${dbSocketPath}/${process.env.INSTANCE_CONNECTION_NAME}`,
-//   ...config
-// })
 
 // Start the server
 const PORT = parseInt(process.env.PORT) || 8080;
