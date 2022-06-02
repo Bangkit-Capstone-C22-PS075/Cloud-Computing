@@ -1,17 +1,17 @@
 const express = require('express')
 const app = express()
 const db = require('./database')
+const userRouter = require('./router/user')
 
+// use specific route handler
+app.use('/user', userRouter)
+
+// for testing
 app.get('/', (req, res) => {
   res.status(200).send('<h2>Hello yoi mamen</h2>').end()
 })
-
 app.get('/boy', (req, res) => {
   res.status(200).send('<h2>Hello yoi boyy</h2>').end()
-})
-
-app.get('/kratos', (req, res) => {
-  res.status(200).send('<h2>Son of kratos</h2>').end()
 })
 
 app.get('/test', (req, res) => {
