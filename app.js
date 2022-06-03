@@ -1,7 +1,11 @@
 const express = require('express')
 const app = express()
 const db = require('./database')
+const cors = require('cors')
 const userRouter = require('./router/user')
+
+// enable cors for all request
+app.use(cors())
 
 // use specific route handler
 app.use('/user', userRouter)
