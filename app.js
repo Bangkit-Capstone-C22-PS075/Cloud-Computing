@@ -7,6 +7,9 @@ const userRouter = require('./router/user')
 // enable cors for all request
 app.use(cors())
 
+// enable middleware
+app.use(express.json())
+
 // use specific route handler
 app.use('/user', userRouter)
 
