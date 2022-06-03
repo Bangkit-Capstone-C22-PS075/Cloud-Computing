@@ -3,6 +3,7 @@ const app = express()
 const db = require('./database')
 const cors = require('cors')
 const userRouter = require('./router/user')
+const sellerRouter = require('./router/seller')
 
 // enable cors for all request
 app.use(cors())
@@ -12,6 +13,7 @@ app.use(express.json())
 
 // use specific route handler
 app.use('/user', userRouter)
+app.use('/seller', sellerRouter)
 
 // for testing
 app.get('/', (req, res) => {
