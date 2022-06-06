@@ -67,7 +67,10 @@ const getAllSellers = (req, res) => {
       res.status(404).send('Cannot get sellers')
       throw err
     }
-    res.status(200).send(result)
+    res.status(200).send({
+      status: 'success',
+      sellers: result
+    })
   })
 }
 

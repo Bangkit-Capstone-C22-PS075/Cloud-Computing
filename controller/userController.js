@@ -84,7 +84,10 @@ const getAllUsers = (req, res) => {
       res.status(404).send('Cannot get users')
       throw err
     }
-    res.status(200).send(result)
+    res.status(200).send({
+      status: 'success',
+      users: result
+    })
   })
 }
 

@@ -52,7 +52,10 @@ const getAllProduct = (req, res) => {
       res.status(404).send('Cannot get products')
       throw err
     }
-    res.status(200).send(result)
+    res.status(200).send({
+      status: 'success',
+      products: result
+    })
   })
 }
 
