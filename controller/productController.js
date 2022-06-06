@@ -9,6 +9,7 @@ const addProduct = (req, res) => {
   const {
     productPhoto,
     name,
+    category,
     definition,
     price_1,
     price_2
@@ -21,6 +22,7 @@ const addProduct = (req, res) => {
     id,
     productPhoto,
     name,
+    category,
     definition,
     price_1,
     price_2,
@@ -29,7 +31,7 @@ const addProduct = (req, res) => {
 
   const getObjVal = Object.values(newProduct)
 
-  let query = "INSERT INTO tbl_product (id, productPhoto, name, definition, price_1, price_2, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?)"
+  let query = "INSERT INTO tbl_product (id, productPhoto, name, category, definition, price_1, price_2, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
   db.query(query, getObjVal, (err) => {
     if (err) {
       res.status(201).send('Product failed to add')
@@ -81,6 +83,7 @@ const editProductById = (req, res) => {
   const {
     productPhoto,
     name,
+    category,
     definition,
     price_1,
     price_2
@@ -88,10 +91,11 @@ const editProductById = (req, res) => {
 
   const updatedAt = new Date().toISOString()
 
-  let query = "UPDATE tbl_product SET productPhoto = ?, name = ?, definition = ?, price_1 = ?, price_2 = ?, updatedAt = ? WHERE id = ?"
+  let query = "UPDATE tbl_product SET productPhoto = ?, name = ?, category = ?, definition = ?, price_1 = ?, price_2 = ?, updatedAt = ? WHERE id = ?"
   db.query(query, [
     productPhoto,
     name,
+    category,
     definition,
     price_1,
     price_2,

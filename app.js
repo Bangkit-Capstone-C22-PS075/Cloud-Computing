@@ -5,6 +5,7 @@ const cors = require('cors')
 const userRouter = require('./router/user')
 const sellerRouter = require('./router/seller')
 const productRouter = require('./router/product')
+const searchRouter = require('./router/search')
 
 // enable cors for all request
 app.use(cors())
@@ -16,6 +17,8 @@ app.use(express.json())
 app.use('/user', userRouter)
 app.use('/seller', sellerRouter)
 app.use('/product', productRouter)
+app.use('/search', searchRouter)
+
 
 // for testing
 app.get('/', (req, res) => {
