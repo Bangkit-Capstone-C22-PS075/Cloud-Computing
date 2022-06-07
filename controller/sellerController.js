@@ -7,6 +7,7 @@ const getSellerTest = (req, res) => {
 
 const addSeller = (req, res) => {
   const {
+    userId,
     shopName,
     province,
     city,
@@ -26,6 +27,7 @@ const addSeller = (req, res) => {
 
   const newSeller = {
     id,
+    userId,
     shopName,
     province,
     city,
@@ -43,7 +45,7 @@ const addSeller = (req, res) => {
 
   const getObjVal = Object.values(newSeller)
 
-  let query = "INSERT INTO tbl_seller (id, shopName, province, city, streetName, detailStreet, skill, sellerPhoto, sellerName, phoneNumber, email, insertedAt, latitude, longtitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  let query = "INSERT INTO tbl_seller (id, userId, shopName, province, city, streetName, detailStreet, skill, sellerPhoto, sellerName, phoneNumber, email, insertedAt, latitude, longtitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
   db.query(query, getObjVal, (err) => {
     if (err) {
       res.status(201).send('Seller failed to add')

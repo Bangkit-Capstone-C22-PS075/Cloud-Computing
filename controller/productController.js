@@ -7,6 +7,7 @@ const getProductTest = (req, res) => {
 
 const addProduct = (req, res) => {
   const {
+    sellerId,
     productPhoto,
     name,
     category,
@@ -20,6 +21,7 @@ const addProduct = (req, res) => {
 
   const newProduct = {
     id,
+    sellerId,
     productPhoto,
     name,
     category,
@@ -31,7 +33,7 @@ const addProduct = (req, res) => {
 
   const getObjVal = Object.values(newProduct)
 
-  let query = "INSERT INTO tbl_product (id, productPhoto, name, category, definition, price_1, price_2, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+  let query = "INSERT INTO tbl_product (id, sellerId, productPhoto, name, category, definition, price_1, price_2, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
   db.query(query, getObjVal, (err) => {
     if (err) {
       res.status(201).send('Product failed to add')
