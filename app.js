@@ -6,6 +6,7 @@ const userRouter = require('./router/user')
 const sellerRouter = require('./router/seller')
 const productRouter = require('./router/product')
 const searchRouter = require('./router/search')
+const transactionRouter = require('./router/transaction')
 
 // enable cors for all request
 app.use(cors())
@@ -18,6 +19,7 @@ app.use('/user', userRouter)
 app.use('/seller', sellerRouter)
 app.use('/product', productRouter)
 app.use('/search', searchRouter)
+app.use('/transaction', transactionRouter)
 
 
 // for testing
