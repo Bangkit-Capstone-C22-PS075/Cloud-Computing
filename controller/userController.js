@@ -6,10 +6,10 @@ const getUserTest = (req, res) => {
 }
 
 const auth = (req, res) => {
-  const { username, password } = req.params
+  const { email, password } = req.body
 
-  let query = "SELECT id, username, password FROM tbl_user WHERE username = ? AND password = ?"
-  db.query(query, [username, password], (err, result) => {
+  let query = "SELECT id, email, password FROM tbl_user WHERE email = ? AND password = ?"
+  db.query(query, [email, password], (err, result) => {
     if (err) {
       res.status(404).send({
         status: 'fail',
