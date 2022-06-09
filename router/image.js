@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database')
-// const process = require('process'); // Required to mock environment variables
+const process = require('process'); // Required to mock environment variables
 
 // [START gae_storage_app]
 const { format } = require('util');
@@ -20,7 +20,7 @@ const multer = Multer({
 });
 
 // add your bucket name here boyy
-const bucket = storage.bucket('cogent-tempo-351103.appspot.com');
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
 
 router.post('/upload', multer.single('file'), (req, res, next) => {
   if (!req.file) {
