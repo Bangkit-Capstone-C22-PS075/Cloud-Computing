@@ -12,7 +12,7 @@ const {
 // users routing
 router.post('/', addUser)
 
-router.get('/auth', auth)
+router.post('/auth', auth)
 
 router.get('/', getAllUsers)
 
