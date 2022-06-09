@@ -73,7 +73,7 @@ router.get('/', (req, res) => {
     }
     res.status(200).send({
       status: 'success',
-      users: result
+      images: result
     })
   })
 })
