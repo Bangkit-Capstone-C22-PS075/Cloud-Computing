@@ -51,7 +51,7 @@ const getAllComment = (req, res) => {
     }
     res.status(200).send({
       status: 'success',
-      sellers: result
+      comments: result
     })
   })
 }
