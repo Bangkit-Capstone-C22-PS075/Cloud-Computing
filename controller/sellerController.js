@@ -77,10 +77,10 @@ const getAllSellers = (req, res) => {
 }
 
 const getSellerById = (req, res, h) => {
-  const { id } = req.params
+  const { userId } = req.params
 
-  let query = "SELECT * FROM tbl_seller WHERE id = ?"
-  db.query(query, [id], (err, result) => {
+  let query = "SELECT * FROM tbl_seller WHERE userId = ?"
+  db.query(query, [userId], (err, result) => {
     if (result.length == 0) {
       res.status(404).send({
         status: 'fail',
