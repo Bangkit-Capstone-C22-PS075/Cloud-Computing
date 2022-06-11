@@ -109,6 +109,22 @@ const getProductById = (req, res) => {
   })
 }
 
+const getProductBySellerId = (req, res) => {
+  const { sellerId } = req.params
+
+  let query = "SELECT * FROM tbl_product WHERE sellerId = ?"
+  db.query(query, [sellerId], (err, result) => {
+    if (result.length == 0) {
+      res.status(404).send({
+        status: 'fail',
+        message: 'Product not found'
+      })
+    } else if (!err && result.length !== 0) {
+      res.status(200).send(result)
+    }
+  })
+}
+
 const editProductById = (req, res) => {
   const { id } = req.params
 
@@ -180,6 +196,7 @@ module.exports = {
   addProduct,
   getAllProduct,
   getProductById,
+  getProductBySellerId,
   editProductById,
   deleteProductById
 }

@@ -5,6 +5,7 @@ const {
   addProduct,
   getAllProduct,
   getProductById,
+  getProductBySellerId,
   editProductById,
   deleteProductById
 } = require('../controller/productController')
@@ -26,6 +27,8 @@ router.post('/', multer.single('productPhoto'), addProduct)
 router.get('/', getAllProduct)
 
 router.get('/:id', getProductById)
+
+router.get('/seller/:sellerId', getProductBySellerId)
 
 router.put('/:id', editProductById)
 
