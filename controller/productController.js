@@ -1,14 +1,24 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database')
+const process = require('process'); // Required to mock environment variables
+
+// [START gae_storage_app]
+const { format } = require('util');
+const { Storage } = require('@google-cloud/storage');
+
+// Instantiate a storage client
+const storage = new Storage();
+
+// add your bucket name here boyy
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
 
 const getProductTest = (req, res) => {
   res.send('this is product controller')
 }
 
-const addProduct = (req, res) => {
+const addProduct = (req, res, next) => {
   const {
     sellerId,
-    productPhoto,
     name,
     category,
     definition,
@@ -16,37 +26,57 @@ const addProduct = (req, res) => {
     price_2
   } = req.body
 
-  const id = uuidv4()
-  const insertedAt = new Date().toISOString()
+  // Create a new blob in the bucket and upload the file data.
+  const blob = bucket.file(req.file.originalname);
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+  });
 
-  const newProduct = {
-    id,
-    sellerId,
-    productPhoto,
-    name,
-    category,
-    definition,
-    price_1,
-    price_2,
-    insertedAt
-  }
+  blobStream.on('error', err => {
+    next(err);
+  });
 
-  const getObjVal = Object.values(newProduct)
+  blobStream.on('finish', () => {
+    // The public URL can be used to directly access the file via HTTP.
+    const publicUrl = format(
+      `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+    );
 
-  let query = "INSERT INTO tbl_product (id, sellerId, productPhoto, name, category, definition, price_1, price_2, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  db.query(query, getObjVal, (err) => {
-    if (err) {
-      res.status(201).send('Product failed to add')
-      throw err
+    const id = uuidv4()
+    const insertedAt = new Date().toISOString()
+    const productPhoto = publicUrl
+
+    const newProduct = {
+      id,
+      sellerId,
+      productPhoto,
+      name,
+      category,
+      definition,
+      price_1,
+      price_2,
+      insertedAt
     }
-    res.status(200).send({
-      status: 'success',
-      message: 'Product added successfully',
-      data: {
-        productId: newProduct.id
+
+    const getObjVal = Object.values(newProduct)
+
+    let query = "INSERT INTO tbl_product (id, sellerId, productPhoto, name, category, definition, price_1, price_2, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    db.query(query, getObjVal, (err) => {
+      if (err) {
+        res.status(201).send('Product failed to add')
+        throw err
       }
+      res.status(200).send({
+        status: 'success',
+        message: 'Product added successfully',
+        data: {
+          productId: newProduct.id
+        }
+      })
     })
-  })
+  });
+
+  blobStream.end(req.file.buffer);
 }
 
 const getAllProduct = (req, res) => {
