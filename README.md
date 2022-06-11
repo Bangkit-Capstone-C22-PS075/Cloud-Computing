@@ -19,12 +19,12 @@ npm start
 ```
 
 ## Configure app.yaml file
+<pre>
 runtime: nodejs16
 
-<pre>
 env_variables:
   INSTANCE_UNIX_SOCKET: /cloudsql/{your-sql-instance-connection-name}
-  DB_USER: root
+  DB_USER: {your-db-user}
   DB_NAME: {your-database-name}
   GCLOUD_STORAGE_BUCKET: {your-bucket}
 </pre>
