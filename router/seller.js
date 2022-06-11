@@ -9,6 +9,16 @@ const {
   deleteSellerById
 } = require('../controller/sellerController')
 
+// [START gae_storage_app]
+const Multer = require('multer');
+
+const multer = Multer({
+  storage: Multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // no larger than 5mb, you can change as needed.
+  },
+});
+
 // define the route
 router.get('/default', (req, res) => {
   res.send('Sellers home page')
@@ -17,7 +27,7 @@ router.get('/default', (req, res) => {
 router.get('/test', getSellerTest)
 
 // start here
-router.post('/', addSeller)
+router.post('/', multer.single('sellerPhoto'), addSeller)
 
 router.get('/', getAllSellers)
 

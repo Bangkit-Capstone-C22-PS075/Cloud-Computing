@@ -1,5 +1,16 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database')
+const process = require('process'); // Required to mock environment variables
+
+// [START gae_storage_app]
+const { format } = require('util');
+const { Storage } = require('@google-cloud/storage');
+
+// Instantiate a storage client
+const storage = new Storage();
+
+// add your bucket name here boyy
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
 
 const getSellerTest = (req, res) => {
   res.send('this is seller controller')
@@ -14,7 +25,6 @@ const addSeller = (req, res) => {
     streetName,
     detailStreet,
     skill,
-    sellerPhoto,
     sellerName,
     phoneNumber,
     email,
@@ -22,44 +32,63 @@ const addSeller = (req, res) => {
     longtitude
   } = req.body
 
-  const id = uuidv4()
-  const insertedAt = new Date().toISOString()
+  const blob = bucket.file(req.file.originalname);
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+  });
 
-  const newSeller = {
-    id,
-    userId,
-    shopName,
-    province,
-    city,
-    streetName,
-    detailStreet,
-    skill,
-    sellerPhoto,
-    sellerName,
-    phoneNumber,
-    email,
-    insertedAt,
-    latitude,
-    longtitude
-  }
+  blobStream.on('error', err => {
+    next(err);
+  });
 
-  const getObjVal = Object.values(newSeller)
+  blobStream.on('finish', () => {
+    // The public URL can be used to directly access the file via HTTP.
+    const publicUrl = format(
+      `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+    )
 
-  let query = "INSERT INTO tbl_seller (id, userId, shopName, province, city, streetName, detailStreet, skill, sellerPhoto, sellerName, phoneNumber, email, insertedAt, latitude, longtitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  db.query(query, getObjVal, (err) => {
-    if (err) {
-      res.status(201).send('Seller failed to add')
-      throw err
+    const id = uuidv4()
+    const insertedAt = new Date().toISOString()
+    const sellerPhoto = publicUrl
+
+    const newSeller = {
+      id,
+      userId,
+      shopName,
+      province,
+      city,
+      streetName,
+      detailStreet,
+      skill,
+      sellerPhoto,
+      sellerName,
+      phoneNumber,
+      email,
+      insertedAt,
+      latitude,
+      longtitude
     }
-    res.status(200)
-    res.send({
-      status: 'success',
-      message: 'Seller added successfully',
-      data: {
-        sellerId: newSeller.id
+
+    const getObjVal = Object.values(newSeller)
+
+    let query = "INSERT INTO tbl_seller (id, userId, shopName, province, city, streetName, detailStreet, skill, sellerPhoto, sellerName, phoneNumber, email, insertedAt, latitude, longtitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    db.query(query, getObjVal, (err) => {
+      if (err) {
+        res.status(201).send('Seller failed to add')
+        throw err
       }
+      res.status(200)
+      res.send({
+        status: 'success',
+        message: 'Seller added successfully',
+        data: {
+          sellerId: newSeller.id
+        }
+      })
     })
   })
+
+  blobStream.end(req.file.buffer);
 }
 
 const getAllSellers = (req, res) => {
