@@ -29,6 +29,6 @@ env_variables:
   GCLOUD_STORAGE_BUCKET: {your-bucket}
 </pre>
 
-Migrate database schema :
-* Import d-jahit-relational.sql database
-
+## Deployment
+1. Deploy Expressjs rest-api to App Engine
+2. Import d-jahit-relational.sql file to Cloud SQL
