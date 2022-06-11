@@ -20,7 +20,7 @@ const multer = Multer({
 });
 
 // add your bucket name here boyy
-const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
 
 router.post('/upload', multer.single('file'), (req, res, next) => {
   if (!req.file) {

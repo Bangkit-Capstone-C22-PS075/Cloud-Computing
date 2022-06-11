@@ -1,5 +1,16 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database')
+const process = require('process'); // Required to mock environment variables
+
+// [START gae_storage_app]
+const { format } = require('util');
+const { Storage } = require('@google-cloud/storage');
+
+// Instantiate a storage client
+const storage = new Storage();
+
+// add your bucket name here boyy
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
 
 const getUserTest = (req, res) => {
   res.send('this is user controller')
@@ -35,46 +46,64 @@ const addUser = (req, res) => {
     dateOfBirth,
     phoneNumber,
     email,
-    photoProfile,
     latitude,
     longtitude
   } = req.body
 
-  const id = uuidv4()
-  const insertedAt = new Date().toISOString()
+  const blob = bucket.file(req.file.originalname);
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+  });
 
-  const newUser = {
-    id,
-    fullName,
-    username,
-    password,
-    gender,
-    dateOfBirth,
-    phoneNumber,
-    email,
-    photoProfile,
-    latitude,
-    longtitude,
-    insertedAt
-  }
+  blobStream.on('error', err => {
+    next(err);
+  });
 
-  const getObjVal = Object.values(newUser)
+  blobStream.on('finish', () => {
+    // The public URL can be used to directly access the file via HTTP.
+    const publicUrl = format(
+      `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+    )
 
-  let query = "INSERT INTO tbl_user (id, fullName, username, password, gender, dateOfBirth, phoneNumber, email, photoProfile, latitude, longtitude, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  db.query(query, getObjVal, (err) => {
-    if (err) {
-      res.status(201).send('User failed to add')
-      throw err
+    const id = uuidv4()
+    const insertedAt = new Date().toISOString()
+    const photoProfile = publicUrl
+
+    const newUser = {
+      id,
+      fullName,
+      username,
+      password,
+      gender,
+      dateOfBirth,
+      phoneNumber,
+      email,
+      photoProfile,
+      latitude,
+      longtitude,
+      insertedAt
     }
-    res.status(200)
-    res.send({
-      status: 'success',
-      message: 'User added successfully',
-      data: {
-        userId: newUser.id
+
+    const getObjVal = Object.values(newUser)
+
+    let query = "INSERT INTO tbl_user (id, fullName, username, password, gender, dateOfBirth, phoneNumber, email, photoProfile, latitude, longtitude, insertedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    db.query(query, getObjVal, (err) => {
+      if (err) {
+        res.status(201).send('User failed to add')
+        throw err
       }
+      res.status(200)
+      res.send({
+        status: 'success',
+        message: 'User added successfully',
+        data: {
+          userId: newUser.id
+        }
+      })
     })
   })
+
+  blobStream.end(req.file.buffer);
 }
 
 const getAllUsers = (req, res) => {
