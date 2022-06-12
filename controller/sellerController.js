@@ -106,6 +106,22 @@ const getAllSellers = (req, res) => {
 }
 
 const getSellerById = (req, res, h) => {
+  const { id } = req.params
+
+  let query = "SELECT * FROM tbl_seller WHERE id = ?"
+  db.query(query, [id], (err, result) => {
+    if (result.length == 0) {
+      res.status(404).send({
+        status: 'fail',
+        message: 'Seller not found'
+      })
+    } else if (!err && result.length !== 0) {
+      res.status(200).send(result[0])
+    }
+  })
+}
+
+const getSellerByUserId = (req, res, h) => {
   const { userId } = req.params
 
   let query = "SELECT * FROM tbl_seller WHERE userId = ?"
@@ -198,6 +214,7 @@ module.exports = {
   addSeller,
   getAllSellers,
   getSellerById,
+  getSellerByUserId,
   editSellerById,
   deleteSellerById
 }

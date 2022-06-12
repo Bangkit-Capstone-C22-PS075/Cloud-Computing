@@ -5,6 +5,7 @@ const {
   addSeller,
   getAllSellers,
   getSellerById,
+  getSellerByUserId,
   editSellerById,
   deleteSellerById
 } = require('../controller/sellerController')
@@ -31,7 +32,9 @@ router.post('/', multer.single('sellerPhoto'), addSeller)
 
 router.get('/', getAllSellers)
 
-router.get('/:userId', getSellerById)
+router.get('/:id', getSellerById)
+
+router.get('/user-id/:userId', getSellerByUserId)
 
 router.put('/:id', editSellerById)
 

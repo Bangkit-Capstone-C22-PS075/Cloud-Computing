@@ -31,9 +31,7 @@ const auth = (req, res) => {
     }
     res.status(200).send({
       status: 'success',
-      loginResult: {
-        userId: result
-      }
+      loginResult: result[0].id
     })
   })
 }
