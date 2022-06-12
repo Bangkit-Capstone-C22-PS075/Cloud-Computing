@@ -20,7 +20,7 @@ const multer = Multer({
 });
 
 // users routing
-router.post('/', multer.single('photoProfile'), addUser)
+router.post('/', addUser)
 
 router.post('/auth', auth)
 
@@ -28,7 +28,7 @@ router.get('/', getAllUsers)
 
 router.get('/:id', getUserById)
 
-router.put('/:id', editUserById)
+router.put('/:id', multer.single('photoProfile'), editUserById)
 
 router.delete('/:id', deleteUserById)
 

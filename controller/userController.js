@@ -1,6 +1,18 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database')
 
+const process = require('process'); // Required to mock environment variables
+
+// [START gae_storage_app]
+const { format } = require('util');
+const { Storage } = require('@google-cloud/storage');
+
+// Instantiate a storage client
+const storage = new Storage();
+
+// add your bucket name here boyy
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
+
 const getUserTest = (req, res) => {
   res.send('this is user controller')
 }
@@ -118,42 +130,59 @@ const editUserById = (req, res) => {
     dateOfBirth,
     phoneNumber,
     email,
-    photoProfile,
     latitude,
     longtitude
   } = req.body
 
-  const updatedAt = new Date().toISOString()
+  const blob = bucket.file(req.file.originalname);
+  const blobStream = blob.createWriteStream({
+    resumable: false,
+  });
 
-  let query = "UPDATE tbl_user SET fullName = ?, username = ?, password = ?, gender = ?, dateOfBirth = ?, phoneNumber = ?, email = ?, photoProfile = ?, latitude = ?, longtitude = ?, updatedAt = ? WHERE id = ?"
-  db.query(query, [
-    fullName,
-    username,
-    password,
-    gender,
-    dateOfBirth,
-    phoneNumber,
-    email,
-    photoProfile,
-    latitude,
-    longtitude,
-    updatedAt,
-    id
-  ], (err, result) => {
-    if (err) {
-      res.status(404)
+  blobStream.on('error', err => {
+    next(err);
+  });
+
+  blobStream.on('finish', () => {
+    // The public URL can be used to directly access the file via HTTP.
+    const publicUrl = format(
+      `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+    )
+    const photoProfile = publicUrl
+    const updatedAt = new Date().toISOString()
+
+    let query = "UPDATE tbl_user SET fullName = ?, username = ?, password = ?, gender = ?, dateOfBirth = ?, phoneNumber = ?, email = ?, photoProfile = ?, latitude = ?, longtitude = ?, updatedAt = ? WHERE id = ?"
+    db.query(query, [
+      fullName,
+      username,
+      password,
+      gender,
+      dateOfBirth,
+      phoneNumber,
+      email,
+      photoProfile,
+      latitude,
+      longtitude,
+      updatedAt,
+      id
+    ], (err, result) => {
+      if (err) {
+        res.status(404)
+        res.send({
+          status: 'fail',
+          message: 'User not found'
+        })
+        throw err
+      }
+      res.status(200)
       res.send({
-        status: 'fail',
-        message: 'User not found'
+        status: 'success',
+        message: 'User successfully updated'
       })
-      throw err
-    }
-    res.status(200)
-    res.send({
-      status: 'success',
-      message: 'User successfully updated'
     })
   })
+
+  blobStream.end(req.file.buffer);
 }
 
 const deleteUserById = (req, res) => {
