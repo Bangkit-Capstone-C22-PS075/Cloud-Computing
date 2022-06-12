@@ -120,7 +120,10 @@ const getProductBySellerId = (req, res) => {
         message: 'Product not found'
       })
     } else if (!err && result.length !== 0) {
-      res.status(200).send(result)
+      res.status(200).send({
+        status: 'success',
+        products: result
+      })
     }
   })
 }
